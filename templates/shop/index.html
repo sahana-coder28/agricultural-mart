@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block head %}
+<style>
+    .hero {
+        background: url("{{ url_for('static', filename='images/hero_bg_professional.png') }}") center/cover;
+        color: white;
+        padding: 4rem 2rem;
+        border-radius: var(--radius);
+        text-align: center;
+        margin-bottom: 3rem;
+        box-shadow: var(--shadow);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .hero-content {
+        background: rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+        padding: 3rem 2rem;
+        border-radius: var(--radius);
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+        max-width: 800px;
+        width: 100%;
+        text-shadow: 1px 1px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .hero h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        font-weight: 700;
+    }
+
+    .hero p {
+        font-size: 1.2rem;
+        margin-bottom: 2rem;
+        max-width: 600px;
+        margin-inline: auto;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="hero-content">
+        <h1>Quality Agriculture Products</h1>
+        <p>Connecting farmers direct to the best seeds, fertilizers, and irrigation tools.</p>
+        {% if not current_user.is_authenticated %}
+        <a href="{{ url_for('auth.register') }}" class="btn btn-secondary"
+            style="font-size: 1.1rem; padding: 0.8rem 2rem;">Join Now</a>
+        {% endif %}
+    </div>
+</div>
+
+<h2 style="margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center;">
+    Frequently Added Products
+    <a href="{{ url_for('main.products') }}" class="btn btn-secondary" style="font-size: 0.9rem; padding: 0.5rem 1.2rem;">View All <i class="fas fa-arrow-right" style="margin-left: 5px; font-size: 0.8rem;" aria-hidden="true"></i></a>
+</h2>
+
+{% if products %}
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+        <!-- Display uploaded product image or default if none -->
+        <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}" class="product-img"
+            style="object-fit: cover; height: 250px; width: 100%;">
+        <div class="product-info">
+            <span class="product-category">{{ product.category }}</span>
+            <div
+                style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; gap: 0.5rem;">
+                <a href="{{ url_for('main.product_detail', product_id=product.id) }}" style="flex: 1;">
+                    <h3 class="product-title" style="margin: 0;">{{ product.name }}</h3>
+                </a>
+                <div class="rating-stars" style="font-size: 0.8rem; white-space: nowrap;" aria-label="Rated {{ '%.1f'|format(product.average_rating) }} out of 5 stars">
+                    <i class="fas fa-star" aria-hidden="true"></i> {{ "%.1f"|format(product.average_rating) }}
+                </div>
+            </div>
+            <div class="product-price">₹{{ "%.2f"|format(product.price) }}</div>
+
+            <div class="card-actions">
+                <form action="{{ url_for('user.add_to_cart', product_id=product.id) }}" method="POST">
+                    <button type="submit" class="btn btn-primary" aria-label="Add {{ product.name }} to cart"><i class="fas fa-cart-plus" aria-hidden="true"></i></button>
+                </form>
+                <form action="{{ url_for('user.toggle_wishlist', product_id=product.id) }}" method="POST">
+                    <button type="submit" class="btn btn-secondary" aria-label="Add {{ product.name }} to wishlist"><i class="fas fa-heart" aria-hidden="true"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="glass-card" style="text-align: center; padding: 3rem;">
+    <i class="fas fa-box-open" style="font-size: 3rem; color: var(--text-light); margin-bottom: 1rem;" aria-hidden="true"></i>
+    <h3>No products found</h3>
+    <p>Check back later or try a different category.</p>
+</div>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Payment History - AgroMart{% endblock %}
+
+{% block content %}
+<div class="container" style="margin-top: 2rem;">
+    <h2 style="margin-bottom: 2rem;">My Payment History</h2>
+    
+    <div class="glass-card" style="padding: 0; overflow: hidden;">
+        <table class="table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: rgba(43, 122, 11, 0.2);">
+                    <th style="padding: 1rem; text-align: left;">Date</th>
+                    <th style="padding: 1rem; text-align: left;">Order ID</th>
+                    <th style="padding: 1rem; text-align: left;">Razorpay ID</th>
+                    <th style="padding: 1rem; text-align: left;">Amount</th>
+                    <th style="padding: 1rem; text-align: left;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1);">
+                    <td style="padding: 1rem;">{{ payment.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td style="padding: 1rem;">#{{ payment.order_id }}</td>
+                    <td style="padding: 1rem; font-family: monospace; font-size: 0.9rem;">{{ payment.razorpay_payment_id or 'N/A' }}</td>
+                    <td style="padding: 1rem; font-weight: bold;">₹{{ "%.2f"|format(payment.amount) }}</td>
+                    <td style="padding: 1rem;">
+                        <span class="badge {% if payment.status == 'Success' %}badge-success{% elif payment.status == 'Failed' %}badge-danger{% else %}badge-warning{% endif %}">
+                            {{ payment.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-light);">No transactions found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .badge {
+        padding: 0.3rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    .badge-success { background: #2b7a0b; color: white; }
+    .badge-danger { background: #d9534f; color: white; }
+    .badge-warning { background: #f0ad4e; color: white; }
+</style>
+{% endblock %}

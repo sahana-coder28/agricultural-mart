@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Your Orders - AgroMart{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom: 2rem; margin-top: 1rem;">Order History</h2>
+
+{% if orders %}
+<div class="glass-card">
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Order ID</th>
+                    <th>Date</th>
+                    <th>Total Base Price</th>
+                    <th>Status</th>
+                    <th>Items</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for order in orders %}
+                <tr>
+                    <td><strong>#ORD-{{ order.id }}</strong></td>
+                    <td>{{ order.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>₹{{ "%.2f"|format(order.total_price) }}</td>
+                    <td>
+                        <span class="badge {% if order.status == 'Pending' %}badge-warning{% else %}badge-success{% endif %}">
+                            {{ order.status }}
+                        </span>
+                    </td>
+                    <td>
+                        <ul style="list-style: none; padding: 0; margin: 0; font-size: 0.9rem;">
+                            {% for item in order.items %}
+                            <li>{{ item.quantity }}x {{ item.product.name }}</li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="glass-card" style="text-align: center; padding: 4rem 2rem;">
+    <i class="fas fa-box" style="font-size: 4rem; color: var(--text-light); margin-bottom: 1rem;"></i>
+    <h3>No orders yet</h3>
+    <p style="margin-bottom: 2rem;">You haven't placed any orders with us yet.</p>
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary">Start Shopping</a>
+</div>
+{% endif %}
+{% endblock %}

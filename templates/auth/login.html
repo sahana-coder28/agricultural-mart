@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block title %}Login - AgroMart{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 70vh;">
+    <div class="glass-card" style="width: 100%; max-width: 400px;">
+        <h2 style="text-align: center; margin-bottom: 2rem; color: var(--primary-color);">Welcome Back</h2>
+        
+        <form method="POST" action="{{ url_for('auth.login') }}" autocomplete="off">
+            <!-- Hidden decoy fields to prevent browser autocomplete -->
+            <input type="text" name="fake_user" style="display:none;" tabindex="-1" autocomplete="username">
+            <input type="password" name="fake_pass" style="display:none;" tabindex="-1" autocomplete="current-password">
+            
+            <div class="form-group">
+                <label for="user_email">Email Address</label>
+                <input type="email" class="form-control" id="user_email" name="user_email" required placeholder="Enter your email" autocomplete="new-password">
+            </div>
+            
+            <div class="form-group">
+                <label for="user_password">Password</label>
+                <input type="password" class="form-control" id="user_password" name="user_password" required placeholder="Enter your password" autocomplete="new-password">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">Login</button>
+        </form>
+        
+        <p style="text-align: center; margin-top: 1.5rem; font-size: 0.9rem;">
+            Don't have an account? <a href="{{ url_for('auth.register') }}" style="color: var(--primary-color); font-weight: 600;">Register here</a>
+        </p>
+    </div>
+</div>
+{% endblock %}

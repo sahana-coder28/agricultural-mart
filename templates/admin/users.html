@@ -1,0 +1,44 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Users - AgroMart Admin{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; margin-top: 1rem;">
+    <h2>Registered Users</h2>
+    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Dashboard</a>
+</div>
+
+<div class="glass-card">
+    <h3 style="margin-bottom: 1rem;">User Directory</h3>
+    {% if users %}
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>#{{ user.id }}</td>
+                    <td><strong>{{ user.username }}</strong></td>
+                    <td><a href="mailto:{{ user.email }}" style="color:var(--primary-color)">{{ user.email }}</a></td>
+                    <td>
+                        <span class="badge {% if user.role == 'farmer' %}badge-success{% else %}badge-warning{% endif %}">
+                            {{ user.role|capitalize }}
+                        </span>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <p style="color: var(--text-light); text-align: center; padding: 2rem 0;">No users registered yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

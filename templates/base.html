@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AgroMart{% endblock %} - Your Modern Agricultural Marketplace</title>
+    <!-- CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/chatbot.css') }}">
+    {% block head %}{% endblock %}
+</head>
+
+<body>
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+
+    <nav class="navbar" aria-label="Main Navigation">
+        <a href="{{ url_for('main.index') }}" class="nav-brand" aria-label="AgroMart Home">
+            <i class="fas fa-leaf" aria-hidden="true"></i> Agro<span>Mart</span>
+        </a>
+
+        <button class="mobile-toggle" id="mobile-toggle" aria-label="Toggle Navigation Menu" aria-controls="nav-links" aria-expanded="false">
+            <i class="fas fa-bars" aria-hidden="true"></i>
+        </button>
+
+        <div class="nav-links" id="nav-links">
+            <a href="{{ url_for('main.index') }}">Home</a>
+            <a href="{{ url_for('main.products') }}">Products</a>
+            {% if current_user.role != 'admin' %}
+            <a href="{{ url_for('main.about') }}">About</a>
+            <a href="{{ url_for('main.contact') }}">Contact</a>
+            {% endif %}
+            
+            <form action="{{ url_for('main.products') }}" method="GET" class="search-form" role="search">
+                <input type="text" name="q" placeholder="Search products..." value="{{ request.args.get('q', '') }}" aria-label="Search for products">
+                <button type="submit" aria-label="Search"><i class="fas fa-search" aria-hidden="true"></i></button>
+            </form>
+
+            {% if current_user.is_authenticated %}
+            {% if current_user.role == 'admin' %}
+                <a href="{{ admin_server_url }}/agromart-admin/dashboard" class="btn btn-secondary" style="padding: 0.4rem 1rem;">Admin Panel</a>
+                <a href="{{ admin_server_url }}/agromart-admin/logout" class="btn btn-danger" style="padding: 0.4rem 1rem;">Logout</a>
+            {% else %}
+                <div class="nav-icons">
+                    <a href="{{ url_for('user.wishlist') }}" title="Wishlist"><i class="far fa-heart"></i></a>
+                    <a href="{{ url_for('user.cart') }}" title="Cart"><i class="fas fa-shopping-cart"></i></a>
+                </div>
+                
+                <div class="profile-dropdown">
+                    <button class="profile-btn" aria-label="User Profile Menu" aria-haspopup="true">
+                        <i class="fas fa-user-circle" aria-hidden="true"></i> {{ current_user.username }} <i class="fas fa-caret-down" style="font-size: 0.8rem; margin-left: 0.2rem;" aria-hidden="true"></i>
+                    </button>
+                    <div class="dropdown-content glass-card">
+                        <a href="{{ url_for('user.profile') }}"><i class="fas fa-id-badge"></i> Profile</a>
+                        <a href="{{ url_for('user.orders') }}"><i class="fas fa-box"></i> Orders</a>
+                        <a href="{{ url_for('user.payment_history') }}"><i class="fas fa-history"></i> Payment History</a>
+                        {% if current_user.role == 'farmer' %}
+                        <a href="{{ url_for('user.my_products') }}"><i class="fas fa-tractor"></i> My Products</a>
+                        {% endif %}
+                        <hr>
+                        <a href="{{ url_for('auth.logout') }}" style="color: #ff4757;"><i class="fas fa-sign-out-alt"></i> Logout</a>
+                    </div>
+                </div>
+            {% endif %}
+            {% else %}
+            <div class="auth-btns">
+                <a href="{{ url_for('auth.login') }}">Login</a>
+                <a href="{{ url_for('auth.register') }}" class="btn btn-primary" style="padding: 0.4rem 1rem;">Register</a>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+    <div class="nav-overlay" id="nav-overlay"></div>
+
+    <!-- Toasts container -->
+    <div class="toast-container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        {% for category, message in messages %}
+        <div class="toast {{ category }}">
+            {% if category == 'success' %}<i class="fas fa-check-circle"
+                style="color:var(--primary-color); margin-right:10px;"></i>
+            {% elif category == 'danger' %}<i class="fas fa-exclamation-circle"
+                style="color:#ff4757; margin-right:10px;"></i>
+            {% elif category == 'info' %}<i class="fas fa-info-circle" style="color:#1e90ff; margin-right:10px;"></i>
+            {% else %}<i class="fas fa-bell" style="color:#ffa502; margin-right:10px;"></i>{% endif %}
+            {{ message }}
+        </div>
+        {% endfor %}
+        {% endif %}
+        {% endwith %}
+    </div>
+
+    <main class="container" id="main-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer>
+        <div style="display: flex; justify-content: center; flex-direction: column; align-items: center; gap: 0.5rem;">
+            <p>&copy; 2024 AgroMart. Empowering Farmers with Technology.</p>
+        </div>
+    </footer>
+
+    <!-- Chatbot Floating Button -->
+    <div id="chatbot-launcher" class="chatbot-launcher" aria-label="Open Chatbot" role="button" tabindex="0">
+        <i class="fas fa-comment-dots" aria-hidden="true"></i>
+    </div>
+
+    <!-- Chatbot Window -->
+    <div id="chatbot-window" class="chatbot-window">
+        <div class="chatbot-header">
+            <div class="bot-info">
+                <div class="bot-avatar">
+                    <i class="fas fa-leaf"></i>
+                </div>
+                <div>
+                    <h4>AgroBot</h4>
+                    <span class="status">Online</span>
+                </div>
+            </div>
+            <button id="close-chat" class="close-chat" aria-label="Close Chatbot"><i class="fas fa-times" aria-hidden="true"></i></button>
+        </div>
+        <div id="chat-messages" class="chat-messages">
+            <div class="message bot-message">
+                <p>Hello! 🌾 I'm AgroBot. How can I help you today?</p>
+                <div class="quick-replies">
+                    <button class="quick-reply" data-msg="Check Prices">Check Prices</button>
+                    <button class="quick-reply" data-msg="Track Order">Track Order</button>
+                    <button class="quick-reply" data-msg="Farmer Support">Farmer Support</button>
+                </div>
+            </div>
+        </div>
+        <div id="typing-indicator" class="typing-indicator hidden">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Type a message..." autocomplete="off" aria-label="Type your message to AgroBot">
+            <button id="send-btn" aria-label="Send Message"><i class="fas fa-paper-plane" aria-hidden="true"></i></button>
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/chatbot.js') }}"></script>
+</body>
+
+</html>

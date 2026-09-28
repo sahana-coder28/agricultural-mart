@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block title %}About Us - AgroMart{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="max-width: 800px; margin: 4rem auto; padding: 3rem; text-align: center;">
+    <h1 style="color: var(--primary-color); margin-bottom: 1.5rem; font-size: 2.5rem;"><i class="fas fa-leaf"></i> About AgroMart</h1>
+    
+    <p style="font-size: 1.1rem; line-height: 1.8; color: var(--text-dark); margin-bottom: 2rem;">
+        AgroMart is a modern agricultural eCommerce platform designed to bridge the gap between farmers and consumers. We believe in empowering local producers by giving them direct access to a wider market, ensuring fair prices for their hard work.
+    </p>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-top: 3rem;">
+        <div style="padding: 2rem; background: rgba(255,255,255,0.5); border-radius: var(--radius); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <i class="fas fa-hand-holding-heart" style="font-size: 3rem; color: var(--secondary-color); margin-bottom: 1rem;"></i>
+            <h3>Direct Trade</h3>
+            <p style="color: var(--text-light); margin-top: 0.5rem;">Cutting out middlemen to benefit everyone.</p>
+        </div>
+        <div style="padding: 2rem; background: rgba(255,255,255,0.5); border-radius: var(--radius); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <i class="fas fa-seedling" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem;"></i>
+            <h3>Quality Guaranteed</h3>
+            <p style="color: var(--text-light); margin-top: 0.5rem;">The best produce and equipment curated for you.</p>
+        </div>
+        <div style="padding: 2rem; background: rgba(255,255,255,0.5); border-radius: var(--radius); box-shadow: 0 4px 10px rgba(0,0,0,0.05);">
+            <i class="fas fa-globe" style="font-size: 3rem; color: #1e90ff; margin-bottom: 1rem;"></i>
+            <h3>Sustainability</h3>
+            <p style="color: var(--text-light); margin-top: 0.5rem;">Promoting farming practices for our planet's future.</p>
+        </div>
+    </div>
+</div>
+{% endblock %}

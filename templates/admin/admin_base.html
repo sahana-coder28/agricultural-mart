@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Dashboard - AgroMart{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --admin-sidebar-width: 250px;
+        }
+        body {
+            background-color: #f8f9fa;
+        }
+        .admin-wrapper {
+            display: flex;
+            min-height: 100vh;
+        }
+        .admin-sidebar {
+            width: var(--admin-sidebar-width);
+            background: linear-gradient(135deg, var(--primary-dark) 0%, #1a1a1a 100%);
+            color: white;
+            padding: 2rem 0;
+            position: fixed;
+            height: 100vh;
+            z-index: 1000;
+        }
+        .admin-sidebar .nav-brand {
+            padding: 0 1.5rem;
+            margin-bottom: 2rem;
+            display: block;
+            font-size: 1.5rem;
+            color: white;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .admin-sidebar .nav-brand span {
+            color: var(--primary-color);
+        }
+        .admin-nav-links a {
+            display: flex;
+            align-items: center;
+            padding: 0.8rem 1.5rem;
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            gap: 10px;
+        }
+        .admin-nav-links a:hover, .admin-nav-links a.active {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-left: 4px solid var(--primary-color);
+        }
+        .admin-main {
+            flex: 1;
+            margin-left: var(--admin-sidebar-width);
+            padding: 2rem;
+        }
+        .admin-header {
+            background: white;
+            padding: 1rem 2rem;
+            margin: -2rem -2rem 2rem -2rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        @media (max-width: 768px) {
+            .admin-sidebar {
+                width: 70px;
+            }
+            .admin-sidebar .nav-brand span, .admin-sidebar .admin-nav-links span {
+                display: none;
+            }
+            .admin-main {
+                margin-left: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-wrapper">
+        {% if current_user.is_authenticated and current_user.role == 'admin' %}
+        <aside class="admin-sidebar">
+            <a href="{{ url_for('admin.dashboard') }}" class="nav-brand">
+                <i class="fas fa-leaf"></i> Agro<span>Admin</span>
+            </a>
+            <nav class="admin-nav-links">
+                <a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint == 'admin.dashboard' %}active{% endif %}">
+                    <i class="fas fa-tachometer-alt"></i> <span>Dashboard</span>
+                </a>
+                <a href="{{ url_for('admin.users') }}" class="{% if request.endpoint == 'admin.users' %}active{% endif %}">
+                    <i class="fas fa-users"></i> <span>Users</span>
+                </a>
+                <a href="{{ url_for('admin.orders') }}" class="{% if request.endpoint == 'admin.orders' %}active{% endif %}">
+                    <i class="fas fa-shopping-cart"></i> <span>Orders</span>
+                </a>
+                <a href="{{ url_for('admin.messages') }}" class="{% if request.endpoint == 'admin.messages' %}active{% endif %}">
+                    <i class="fas fa-envelope"></i> <span>Messages</span>
+                </a>
+                <a href="{{ url_for('admin.transactions') }}" class="{% if request.endpoint == 'admin.transactions' %}active{% endif %}">
+                    <i class="fas fa-history"></i> <span>Transactions</span>
+                </a>
+                <hr style="margin: 1rem 1.5rem; opacity: 0.1;">
+                <a href="{{ user_server_url }}/" target="_blank">
+                    <i class="fas fa-external-link-alt"></i> <span>View Site</span>
+                </a>
+                <a href="{{ url_for('admin.logout') }}" style="color: #ff4757;">
+                    <i class="fas fa-sign-out-alt"></i> <span>Logout</span>
+                </a>
+            </nav>
+        </aside>
+        {% endif %}
+
+        <main class="admin-main">
+            {% if current_user.is_authenticated and current_user.role == 'admin' %}
+            <header class="admin-header">
+                <h4 style="margin:0;">Welcome, Admin</h4>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span>{{ current_user.username }}</span>
+                    <i class="fas fa-user-shield" style="font-size: 1.5rem; color: var(--primary-dark);"></i>
+                </div>
+            </header>
+            {% endif %}
+
+            <!-- Toasts container -->
+            <div class="toast-container" style="top: 1rem; right: 1rem;">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                {% for category, message in messages %}
+                <div class="toast {{ category }}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+                {% endif %}
+                {% endwith %}
+            </div>
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script>
+        // Simple toast dismissal
+        document.querySelectorAll('.toast').forEach(toast => {
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        });
+    </script>
+</body>
+</html>

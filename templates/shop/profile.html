@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}Profile - AgroMart{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: flex-start; min-height: 70vh; margin-top: 2rem;">
+    <div class="glass-card" style="width: 100%; max-width: 500px; text-align: center; padding: 3rem 2rem;">
+        
+        <div style="margin-bottom: 1.5rem;">
+            <div style="width: 100px; height: 100px; border-radius: 50%; background-color: var(--primary-color); color: white; display: flex; align-items: center; justify-content: center; font-size: 3rem; margin: 0 auto; box-shadow: var(--shadow);">
+                {{ current_user.username[0]|upper }}
+            </div>
+        </div>
+
+        <h2 style="margin-bottom: 0.5rem;">{{ current_user.username }}</h2>
+        <p style="color: var(--text-light); margin-bottom: 2rem;">{{ current_user.email }}</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 2rem; text-align: left;">
+            <div style="padding: 1rem; background: rgba(0,0,0,0.03); border-radius: var(--radius);">
+                <small style="color: var(--text-light); display: block;">Account type</small>
+                <strong><i class="fas {% if current_user.role == 'farmer' %}fa-tractor{% else %}fa-user{% endif %}" style="color:var(--primary-color)"></i> {{ current_user.role|capitalize }}</strong>
+            </div>
+            <div style="padding: 1rem; background: rgba(0,0,0,0.03); border-radius: var(--radius);">
+                <small style="color: var(--text-light); display: block;">Status</small>
+                <strong><i class="fas fa-check-circle" style="color:#2ecc71"></i> Active</strong>
+            </div>
+        </div>
+
+        <a href="{{ url_for('user.edit_profile') }}" class="btn btn-primary" style="width: 100%; display: inline-block;"><i class="fas fa-edit"></i> Edit Profile Settings</a>
+    </div>
+</div>
+{% endblock %}

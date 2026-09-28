@@ -1,0 +1,33 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Admin Login - AgroMart{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: center; align-items: center; min-height: 70vh;">
+    <div class="glass-card" style="width: 100%; max-width: 400px; border-top: 4px solid var(--primary-dark);">
+        <h2 style="text-align: center; margin-bottom: 2rem; color: var(--primary-dark);">
+            <i class="fas fa-lock"></i> Admin Portal
+        </h2>
+        
+        <form method="POST" action="{{ url_for('admin.login') }}" autocomplete="off">
+            <!-- Hidden decoy fields to prevent browser autocomplete -->
+            <input type="text" name="fake_user" style="display:none;" tabindex="-1" autocomplete="username">
+            <input type="password" name="fake_pass" style="display:none;" tabindex="-1" autocomplete="current-password">
+            
+            <div class="form-group">
+                <label for="admin_email">Admin Email</label>
+                <input type="email" class="form-control" id="admin_email" name="admin_email" required placeholder="admin@agromart.com" autocomplete="new-password">
+            </div>
+            
+            <div class="form-group">
+                <label for="admin_password">Password</label>
+                <input type="password" class="form-control" id="admin_password" name="admin_password" required placeholder="Enter admin password" autocomplete="new-password">
+            </div>
+            
+            <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem; background-color: var(--primary-dark);">
+                Secure Login
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

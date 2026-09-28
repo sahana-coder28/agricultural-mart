@@ -1,0 +1,64 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}All Transactions - AgroMart Admin{% endblock %}
+
+{% block content %}
+<div class="glass-card" style="margin-top: 1rem;">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+        <h2 style="color: var(--primary-color);">Global Transaction Log</h2>
+        <div style="background: rgba(43, 122, 11, 0.1); padding: 0.5rem 1rem; border-radius: var(--radius);">
+            <strong>Total Volume:</strong> ₹{{ "%.2f"|format(payments|selectattr('status', 'equalto', 'Success')|sum(attribute='amount')) }}
+        </div>
+    </div>
+    
+    <div style="overflow-x: auto;">
+        <table class="table" style="width: 100%; border-collapse: collapse;">
+            <thead>
+                <tr style="background: rgba(43, 122, 11, 0.2);">
+                    <th style="padding: 1rem; text-align: left;">Date</th>
+                    <th style="padding: 1rem; text-align: left;">User</th>
+                    <th style="padding: 1rem; text-align: left;">Order ID</th>
+                    <th style="padding: 1rem; text-align: left;">Razorpay Payment ID</th>
+                    <th style="padding: 1rem; text-align: left;">Amount</th>
+                    <th style="padding: 1rem; text-align: left;">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for payment in payments %}
+                <tr style="border-bottom: 1px solid rgba(255, 255, 255, 0.1); transition: background 0.3s;" onmouseover="this.style.background='rgba(255,255,255,0.05)'" onmouseout="this.style.background='transparent'">
+                    <td style="padding: 1rem;">{{ payment.created_at.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td style="padding: 1rem;">
+                        <span style="font-weight: 500;">{{ payment.user.username }}</span><br>
+                        <small style="color: var(--text-light);">{{ payment.user.email }}</small>
+                    </td>
+                    <td style="padding: 1rem;"><a href="{{ url_for('admin.order_detail', order_id=payment.order_id) }}" style="color: var(--primary-color);">#{{ payment.order_id }}</a></td>
+                    <td style="padding: 1rem; font-family: monospace; font-size: 0.9rem;">{{ payment.razorpay_payment_id or 'N/A' }}</td>
+                    <td style="padding: 1rem; font-weight: bold;">₹{{ "%.2f"|format(payment.amount) }}</td>
+                    <td style="padding: 1rem;">
+                        <span class="badge {% if payment.status == 'Success' %}badge-success{% elif payment.status == 'Failed' %}badge-danger{% else %}badge-warning{% endif %}">
+                            {{ payment.status }}
+                        </span>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="padding: 3rem; text-align: center; color: var(--text-light);">No transaction records found in database.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<style>
+    .badge {
+        padding: 0.3rem 0.6rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: bold;
+    }
+    .badge-success { background: #2b7a0b; color: white; }
+    .badge-danger { background: #d9534f; color: white; }
+    .badge-warning { background: #f0ad4e; color: white; }
+</style>
+{% endblock %}

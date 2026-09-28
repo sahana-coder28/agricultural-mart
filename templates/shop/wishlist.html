@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+
+{% block title %}Your Wishlist - AgroMart{% endblock %}
+
+{% block content %}
+<h2 style="margin-bottom: 2rem; margin-top: 1rem;">My Wishlist <i class="fas fa-heart" style="color: #ff4757;"></i></h2>
+
+{% if wishlist_items %}
+<div class="product-grid">
+    {% for item in wishlist_items %}
+    <div class="product-card">
+        <img src="{{ url_for('static', filename=item.product.image_url) }}" alt="{{ item.product.name }}" class="product-img">
+        <div class="product-info">
+            <a href="{{ url_for('main.product_detail', product_id=item.product.id) }}"><h3 class="product-title">{{ item.product.name }}</h3></a>
+            <div class="product-price">₹{{ "%.2f"|format(item.product.price) }}</div>
+            
+            <div class="card-actions">
+                <form action="{{ url_for('user.add_to_cart', product_id=item.product.id) }}" method="POST">
+                    <button type="submit" class="btn btn-primary"><i class="fas fa-cart-plus"></i></button>
+                </form>
+                <form action="{{ url_for('user.toggle_wishlist', product_id=item.product.id) }}" method="POST">
+                    <button type="submit" class="btn btn-danger"><i class="fas fa-trash"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="glass-card" style="text-align: center; padding: 4rem 2rem;">
+    <i class="far fa-heart" style="font-size: 4rem; color: var(--text-light); margin-bottom: 1rem;"></i>
+    <h3>Your wishlist is empty</h3>
+    <p style="margin-bottom: 2rem;">Save items you like to your wishlist.</p>
+    <a href="{{ url_for('main.index') }}" class="btn btn-primary">Discover Products</a>
+</div>
+{% endif %}
+{% endblock %}

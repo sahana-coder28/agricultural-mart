@@ -1,0 +1,84 @@
+{% extends "admin/admin_base.html" %}
+
+{% block title %}Order #{{ order.id }} - AgroMart Admin{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; margin-top: 1rem;">
+    <h2>Order #{{ order.id }} Details</h2>
+    <a href="{{ url_for('admin.orders') }}" class="btn btn-secondary"><i class="fas fa-arrow-left"></i> Back to Orders</a>
+</div>
+
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; margin-bottom: 2rem;">
+    <div class="glass-card">
+        <h3 style="margin-bottom: 1rem;"><i class="fas fa-user"></i> Customer Info</h3>
+        <p><strong>Username:</strong> {{ order.user.username }}</p>
+        <p><strong>Email:</strong> <a href="mailto:{{ order.user.email }}" style="color:var(--primary-color)">{{ order.user.email }}</a></p>
+        <p><strong>Role:</strong> {{ order.user.role|capitalize }}</p>
+        <hr style="margin: 1rem 0; border: none; border-top: 1px solid var(--glass-border);">
+        <p><strong>Order Date:</strong> {{ order.created_at.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+        <p><strong>Total Amount:</strong> <span style="font-size: 1.5rem; color: var(--primary-color); font-weight: bold;">₹{{ "%.2f"|format(order.total_price) }}</span></p>
+    </div>
+
+    <div class="glass-card">
+        <h3 style="margin-bottom: 1rem;"><i class="fas fa-cog"></i> Update Status</h3>
+        {% if order.status != 'Delivered' %}
+        <form action="{{ url_for('admin.order_detail', order_id=order.id) }}" method="POST">
+            <div class="form-group">
+                <label for="status">Order Status</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="Pending" {% if order.status == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Confirmed" {% if order.status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                    <option value="Shipped" {% if order.status == 'Shipped' %}selected{% endif %}>Shipped</option>
+                    <option value="Delivered" {% if order.status == 'Delivered' %}selected{% endif %}>Delivered</option>
+                    <option value="Cancelled" {% if order.status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Update Status</button>
+        </form>
+        {% else %}
+        <div style="background: rgba(43, 122, 11, 0.1); border: 1px dashed var(--primary-color); padding: 1.5rem; text-align: center; border-radius: var(--radius);">
+            <i class="fas fa-check-circle" style="font-size: 2rem; color: var(--primary-color); margin-bottom: 0.5rem;"></i>
+            <p style="color: var(--primary-color); font-weight: bold; margin: 0;">Order Delivered & Locked</p>
+            <p style="font-size: 0.9rem; color: #666; margin-top: 5px;">No further status changes are allowed.</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<div class="glass-card">
+    <h3 style="margin-bottom: 1rem;"><i class="fas fa-shopping-basket"></i> Order Items</h3>
+    <div class="table-container">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Product</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in order.items %}
+                <tr>
+                    <td>
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <img src="{{ url_for('static', filename=item.product.image_url) }}" alt="{{ item.product.name }}" style="width: 50px; height: 50px; border-radius: 4px; object-fit: cover;">
+                            <strong>{{ item.product.name }}</strong>
+                        </div>
+                    </td>
+                    <td>₹{{ "%.2f"|format(item.price) }}</td>
+                    <td>{{ item.quantity }}</td>
+                    <td>₹{{ "%.2f"|format(item.price * item.quantity) }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="3" style="text-align: right;"><strong>Total:</strong></td>
+                    <td><strong>₹{{ "%.2f"|format(order.total_price) }}</strong></td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+</div>
+{% endblock %}

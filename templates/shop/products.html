@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Our Products{% endblock %}
+
+{% block content %}
+<div class="products-header" style="margin-bottom: 2rem;">
+    {% if search_query %}
+    <h1>Search Results for "{{ search_query }}"</h1>
+    {% elif request.args.get('category') %}
+    <h1 style="text-transform: capitalize;">{{ request.args.get('category') }}</h1>
+    {% else %}
+    <h1>All Products</h1>
+    {% endif %}
+    <p style="color: var(--text-light);">Browse our complete catalog of high-quality agricultural supplies.</p>
+</div>
+
+<div class="filter-bar">
+    <a href="{{ url_for('main.products') }}"
+        class="filter-btn {% if not request.args.get('category') %}active{% endif %}">All</a>
+    <a href="{{ url_for('main.products', category='seeds') }}"
+        class="filter-btn {% if request.args.get('category') == 'seeds' %}active{% endif %}">Seeds</a>
+    <a href="{{ url_for('main.products', category='fertilizers') }}"
+        class="filter-btn {% if request.args.get('category') == 'fertilizers' %}active{% endif %}">Fertilizers</a>
+    <a href="{{ url_for('main.products', category='pesticides') }}"
+        class="filter-btn {% if request.args.get('category') == 'pesticides' %}active{% endif %}">Pesticides</a>
+    <a href="{{ url_for('main.products', category='irrigation') }}"
+        class="filter-btn {% if request.args.get('category') == 'irrigation' %}active{% endif %}">Irrigation</a>
+</div>
+
+{% if products %}
+<div class="product-grid">
+    {% for product in products %}
+    <div class="product-card">
+        <img src="{{ url_for('static', filename=product.image_url) }}" alt="{{ product.name }}" class="product-img"
+            style="object-fit: cover; height: 250px; width: 100%;">
+        <div class="product-info">
+            <span class="product-category">{{ product.category }}</span>
+            <div
+                style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.5rem; gap: 0.5rem;">
+                <a href="{{ url_for('main.product_detail', product_id=product.id) }}" style="flex: 1;">
+                    <h3 class="product-title" style="margin: 0;">{{ product.name }}</h3>
+                </a>
+                <div class="rating-stars" style="font-size: 0.8rem; white-space: nowrap;" aria-label="Rated {{ '%.1f'|format(product.average_rating) }} out of 5 stars">
+                    <i class="fas fa-star" aria-hidden="true"></i> {{ "%.1f"|format(product.average_rating) }}
+                </div>
+            </div>
+            <div class="product-price">₹{{ "%.2f"|format(product.price) }}</div>
+
+            <div class="card-actions">
+                <form action="{{ url_for('user.add_to_cart', product_id=product.id) }}" method="POST">
+                    <button type="submit" class="btn btn-primary" aria-label="Add {{ product.name }} to cart"><i class="fas fa-cart-plus" aria-hidden="true"></i></button>
+                </form>
+                <form action="{{ url_for('user.toggle_wishlist', product_id=product.id) }}" method="POST">
+                    <button type="submit" class="btn btn-secondary" aria-label="Add {{ product.name }} to wishlist"><i class="fas fa-heart" aria-hidden="true"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="glass-card" style="text-align: center; padding: 3rem;">
+    <i class="fas fa-box-open" style="font-size: 3rem; color: var(--text-light); margin-bottom: 1rem;" aria-hidden="true"></i>
+    <h3>No products found</h3>
+    <p>Check back later or try a different search term/category.</p>
+</div>
+{% endif %}
+{% endblock %}
